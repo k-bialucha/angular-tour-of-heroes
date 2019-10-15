@@ -4,6 +4,7 @@ import { Observable, of } from 'rxjs';
 
 import { Hero } from './hero';
 import { HEROES } from './mock-heroes';
+
 import { MessageService } from './message.service';
 
 @Injectable({
@@ -16,5 +17,11 @@ export class HeroService {
     this.messageService.add('HeroService: fetched heroes');
 
     return of(HEROES);
+  }
+
+  getHero(id: number): Observable<Hero> {
+    this.messageService.add(`HeroService: fetched hero with ID=${id}`);
+
+    return of(HEROES.find(hero => hero.id === id));
   }
 }

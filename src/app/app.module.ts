@@ -19,7 +19,6 @@ import { MessagesComponent } from './messages/messages.component';
     DashboardComponent,
   ],
   imports: [BrowserModule, FormsModule, AppRoutingModule],
-  providers: [],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
