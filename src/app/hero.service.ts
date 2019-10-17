@@ -114,6 +114,22 @@ export class HeroService {
     );
   }
 
+  searchHeroes(term: string): Observable<Hero[]> {
+    const termLowerCase = term.toLowerCase();
+
+    return this.getHeroes().pipe(
+      map(fullHeroList => {
+        const filteredList = fullHeroList.filter(hero =>
+          hero.name.toLowerCase().includes(termLowerCase)
+        );
+
+        return filteredList;
+      }),
+      tap(_ => this.log(`found heroes matching "${termLowerCase}"`)),
+      catchError(this.handleError<Hero[]>('searchHeroes', []))
+    );
+  }
+
   private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
       console.error(error);
