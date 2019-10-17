@@ -1,8 +1,15 @@
 <div id="search-component">
   <h4><label for="search-box">Hero Search</label></h4>
-
+  <h6
+    [ngStyle]="{
+      opacity: resultsCount !== null ? 70 : 0,
+      padding: 0,
+      margin: 0
+    }"
+  >
+    <span>{{ resultsCount }} result(s) found for term: "{{ term }}"</span>
+  </h6>
   <input #searchBox id="search-box" (input)="search(searchBox.value)" />
-
   <ul class="search-result">
     <li *ngFor="let hero of heroes$ | async">
       <a routerLink="/detail/{{ hero.id }}">

@@ -18,25 +18,27 @@ export class HeroSearchComponent implements OnInit {
   heroes$: Observable<Hero[]>;
   private _searchTerms = new Subject<string>();
 
-  private _resultsCount: number;
+  private _resultsCount: number = null;
   public get resultsCount(): number {
     return this._resultsCount;
   }
+  term: string = null;
 
   constructor(private heroService: HeroService) {}
 
   ngOnInit() {
-    this.heroes$ = this._searchTerms
-      .pipe(
-        debounceTime(300),
-        distinctUntilChanged(),
-        switchMap((term: string) => this.heroService.searchHeroes(term))
-      )
-      .pipe(
-        tap(heroes => {
-          this._resultsCount = heroes.length;
-        })
-      );
+    this.heroes$ = this._searchTerms.pipe(
+      tap(term => {
+        this._resultsCount = null;
+        this.term = term;
+      }),
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap((term: string) => this.heroService.searchHeroes(term)),
+      tap(heroes => {
+        this._resultsCount = heroes.length;
+      })
+    );
   }
 
   search(term: string): void {

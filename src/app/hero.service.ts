@@ -50,9 +50,9 @@ export class HeroService {
 
         return heroes;
       }),
-      tap(_ => {
-        console.log('sth', _);
-      }),
+      // tap(_ => {
+      //   console.log('example', _);
+      // }),
       catchError(this.handleError<Hero[]>('getHeroes', []))
     );
   }
