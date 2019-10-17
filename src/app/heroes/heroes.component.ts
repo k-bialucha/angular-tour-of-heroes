@@ -23,4 +23,15 @@ export class HeroesComponent implements OnInit {
       this.heroes = heroes;
     });
   }
+
+  addHero(name: string) {
+    const nameTrimmed = name.trim();
+
+    if (!nameTrimmed) return;
+
+    this.heroService.createHero(name).subscribe(() => {
+      this.getHeroes();
+      console.warn('add success');
+    });
+  }
 }
