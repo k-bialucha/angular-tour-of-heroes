@@ -4,7 +4,6 @@ import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { Hero } from './hero';
-import { HEROES } from './mock-heroes';
 
 import { MessageService } from './message.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
@@ -26,8 +25,8 @@ export class HeroService {
   getHeroes(): Observable<Hero[]> {
     this.messageService.add('HeroService: fetched heroes');
 
-    return this.httpClient.get(ENDPOINT_URL).pipe(
-      map((responseData: { [key: string]: Hero }) => {
+    return this.httpClient.get<{ [key: string]: Hero }>(ENDPOINT_URL).pipe(
+      map(responseData => {
         const heroIds = Object.keys(responseData);
 
         const heroes = heroIds.map(id => ({
@@ -43,7 +42,14 @@ export class HeroService {
   getHero(id: string): Observable<Hero> {
     this.messageService.add(`HeroService: fetched hero with ID=${id}`);
 
-    return of(HEROES.find(hero => hero.id === id));
+    // return this.httpClient.get<Hero>(ENDPOINT_URL+ ???);
+    return this.getHeroes().pipe(
+      map(heroesList => {
+        const hero: Hero = heroesList.find(hero => hero.id === id);
+
+        return hero;
+      })
+    );
   }
 
   private log(message: string) {
