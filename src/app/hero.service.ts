@@ -9,14 +9,26 @@ import { MessageService } from './message.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 const API_URL = 'https://angular-udemy-course-backend.firebaseio.com';
-const POSTS_PATH = 'heroes.json';
+const BASE_PATH = 'heroes';
 
-const ENDPOINT_URL = `${API_URL}/${POSTS_PATH}`;
+const createEndpointPath = (pathsHierarchy: string[] = []) => {
+  const paths = [BASE_PATH, ...pathsHierarchy];
+
+  const pathsMerged = paths.reduce((currentPath, nextPath) => {
+    return currentPath + '/' + nextPath;
+  }, '');
+
+  return `${API_URL}${pathsMerged}.json`;
+};
 
 @Injectable({
   providedIn: 'root',
 })
 export class HeroService {
+  private _httpOptions = {
+    headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+  };
+
   constructor(
     private httpClient: HttpClient,
     private messageService: MessageService
@@ -25,7 +37,9 @@ export class HeroService {
   getHeroes(): Observable<Hero[]> {
     this.messageService.add('HeroService: fetched heroes');
 
-    return this.httpClient.get<{ [key: string]: Hero }>(ENDPOINT_URL).pipe(
+    const endpointPath = createEndpointPath();
+
+    return this.httpClient.get<{ [key: string]: Hero }>(endpointPath).pipe(
       map(responseData => {
         const heroIds = Object.keys(responseData);
 
@@ -58,6 +72,31 @@ export class HeroService {
       }),
       catchError(this.handleError<Hero>(`getHero id="${id}"`))
     );
+  }
+
+  createHero(name: string): Observable<{ [key: string]: string }> {
+    const endpointPath = createEndpointPath();
+
+    const newHero = {
+      name,
+    };
+
+    return this.httpClient.post<{ [key: string]: string }>(
+      endpointPath,
+      newHero
+    );
+  }
+
+  updateHero(updatedHero: Hero): Observable<any> {
+    const endpointPath = createEndpointPath([updatedHero.id]);
+
+    return this.httpClient
+      .put(endpointPath, updatedHero, this._httpOptions)
+      .pipe(
+        tap(_ => {
+          this.log(`hero updated: ${JSON.stringify(updatedHero)}`);
+        })
+      );
   }
 
   private handleError<T>(operation = 'operation', result?: T) {
