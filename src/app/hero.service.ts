@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
 import { Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { catchError, map, tap } from 'rxjs/operators';
 
 import { Hero } from './hero';
 
@@ -35,7 +35,11 @@ export class HeroService {
         }));
 
         return heroes;
-      })
+      }),
+      tap(_ => {
+        console.log('sth', _);
+      }),
+      catchError(this.handleError<Hero[]>('getHeroes', []))
     );
   }
 
@@ -48,8 +52,21 @@ export class HeroService {
         const hero: Hero = heroesList.find(hero => hero.id === id);
 
         return hero;
-      })
+      }),
+      tap(_ => {
+        console.log(`fetched hero with ID="${id}"`);
+      }),
+      catchError(this.handleError<Hero>(`getHero id="${id}"`))
     );
+  }
+
+  private handleError<T>(operation = 'operation', result?: T) {
+    return (error: any): Observable<T> => {
+      console.error(error);
+      this.log(`${operation} failed: ${error.message}`);
+
+      return of(result as T);
+    };
   }
 
   private log(message: string) {
