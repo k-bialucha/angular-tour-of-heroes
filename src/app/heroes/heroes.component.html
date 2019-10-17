@@ -4,6 +4,13 @@
     <a routerLink="/detail/{{ hero.id }}">
       <span class="badge">{{ hero.id.slice(-5) }}</span> {{ hero.name }}
     </a>
+    <button
+      class="delete"
+      title="delete {{ hero.name }}"
+      (click)="deleteHero(hero.id)"
+    >
+      x
+    </button>
   </li>
 </ul>
 <div>

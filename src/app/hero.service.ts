@@ -99,6 +99,17 @@ export class HeroService {
       );
   }
 
+  deleteHero(id: string): Observable<any> {
+    const endpointPath = createEndpointPath([id]);
+
+    return this.httpClient.delete(endpointPath, this._httpOptions).pipe(
+      tap(_ => {
+        this.log(`DELETE hero with ID="${id}"`);
+      }),
+      catchError(this.handleError<Hero>('deleteHero'))
+    );
+  }
+
   private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
       console.error(error);

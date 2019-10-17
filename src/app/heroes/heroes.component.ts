@@ -31,7 +31,14 @@ export class HeroesComponent implements OnInit {
 
     this.heroService.createHero(name).subscribe(() => {
       this.getHeroes();
-      console.warn('add success');
+    });
+  }
+
+  deleteHero(id: string) {
+    console.warn('will delete:', id);
+    this.heroService.deleteHero(id).subscribe(data => {
+      console.warn('delete data:', data);
+      this.getHeroes();
     });
   }
 }
