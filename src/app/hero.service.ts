@@ -81,10 +81,14 @@ export class HeroService {
       name,
     };
 
-    return this.httpClient.post<{ [key: string]: string }>(
-      endpointPath,
-      newHero
-    );
+    return this.httpClient
+      .post<{ [key: string]: string }>(endpointPath, newHero)
+      .pipe(
+        tap(data => {
+          this.log(`CREATED new hero: ${data.name}`);
+        }),
+        catchError(this.handleError<{ [key: string]: string }>('addHero'))
+      );
   }
 
   updateHero(updatedHero: Hero): Observable<any> {
